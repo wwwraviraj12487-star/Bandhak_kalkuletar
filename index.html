@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>हिंदी महीना ब्याज 1433</title>
+<title>हिंदी साल 1433 ब्याज</title>
 <style>
 body { font-family: Arial; background: #f0f8ff; padding: 10px; }
 .box { background: #fff; padding: 15px; border-radius: 10px; max-width: 500px; margin: auto; }
@@ -26,9 +26,9 @@ td { padding: 5px; text-align: center; border: 1px solid #ddd; }
 
 <div class="box">
   <div class="header">
-    <h1>🇮🇳 Vyapar Bandhu हिंदी साल 1433 हिसाब 🇮🇳</h1>
+    <h1>🇮🇳 Vyapar Bandhu हिंदी साल 1433 🇮🇳</h1>
   </div>
-  <h2 style="text-align:center; color:#004080;">महीने से हिसाब + 1 साल बाद चक्रवृद्धि</h2>
+  <h2 style="text-align:center; color:#004080;">1 साल साधारण, फिर चक्रवृद्धि</h2>
 
   <label>मूलधन ₹</label>
   <input id="p" type="number" value="10000">
@@ -45,7 +45,7 @@ td { padding: 5px; text-align: center; border: 1px solid #ddd; }
       <option selected>सावन</option><option>भादो</option><option>क्वार</option><option>कार्तिक</option>
       <option>अगहन</option><option>पूस</option><option>माघ</option><option>फागुन</option>
     </select>
-    <input id="sSal" type="number" value="1433">
+    <input id="sSal" type="number" value="1431">
   </div>
 
   <label>अंत की तारीख - हिंदी</label>
@@ -68,28 +68,26 @@ td { padding: 5px; text-align: center; border: 1px solid #ddd; }
 <script>
 const mahinaList = ["चैत्र","बैसाख","जेठ","आषाढ़","सावन","भादो","क्वार","कार्तिक","अगहन","पूस","माघ","फागुन"];
 
-// हर 3 साल में अधिक महीना। 1433, 1436, 1439... 
 function isAdhikVarsh(sal){
-  return (sal - 1433) % 3 === 0; 
+  return (sal - 1433) % 3 === 0; // 1433, 1436...
 }
 
 function hindiDateToMonths(din, paksh, mahina, sal){
   let totalMonths = 0;
-  for(let y = 1433; y < sal; y++){
+  for(let y = 1431; y < sal; y++){
     totalMonths += 12;
-    if(isAdhikVarsh(y)) totalMonths += 1; // अधिक महीना
+    if(isAdhikVarsh(y)) totalMonths += 1;
   }
   
   let mahinaIndex = mahinaList.indexOf(mahina);
   totalMonths += mahinaIndex;
   
   if(isAdhikVarsh(sal) && mahinaIndex >= mahinaList.indexOf("सावन")) {
-    totalMonths += 1; // अधिक सावन
+    totalMonths += 1;
   }
   
-  // आधा महीना: सुदी = 0, बदी = 0.5
   let halfMonth = (paksh === 'badi') ? 0.5 : 0;
-  let dinPart = (parseInt(din)-1)/15; // 1-15 के बीच
+  let dinPart = (parseInt(din)-1)/15;
   
   return totalMonths + halfMonth + dinPart;
 }
@@ -98,8 +96,8 @@ function calc(){
   let P = parseFloat(p.value);
   let R = parseFloat(r.value);
   
-  let startMonths = hindiDateToMonths(sDin.value, sPaksh.value, sMahina.value, sSal.value);
-  let endMonths = hindiDateToMonths(eDin.value, ePaksh.value, eMahina.value, eSal.value);
+  let startMonths = hindiDateToMonths(sDin.value, sPaksh.value, sMahina.value, parseInt(sSal.value));
+  let endMonths = hindiDateToMonths(eDin.value, ePaksh.value, eMahina.value, parseInt(eSal.value));
   let totalMonths = endMonths - startMonths;
 
   if(totalMonths < 0){ alert("अंत की तारीख गलत है"); return; }
@@ -109,54 +107,50 @@ function calc(){
   let adhikCount = 0;
   let table = `<table><tr><th>साल</th><th>प्रकार</th><th>महीना</th><th>शुरू रकम</th><th>ब्याज</th><th>कुल रकम</th></tr>`;
 
-  // 1. PEHLA SAAL = SADHARAN BYAJ - 12 mahina
-  if(totalMonths >= 12){
-    let interest1 = P * (R/100) * 1; // 1 saal
-    let after1Year = P + interest1;
-    table += `<tr><td>1</td><td class="red">साधारण</td><td>12</td><td>₹${P.toFixed(0)}</td><td>₹${interest1.toFixed(2)}</td><td>₹${after1Year.toFixed(2)}</td></tr>`;
-    currentP = after1Year;
-    totalCI += interest1;
-    totalMonths -= 12;
-  } else {
-    // 1 saal se kam - MAHINE SE HISAB
-    let interest = P * (R/100) * (totalMonths/12);
-    table += `<tr><td>1</td><td class="red">साधारण</td><td>${totalMonths.toFixed(1)}</td><td>₹${P.toFixed(0)}</td><td>₹${interest.toFixed(2)}</td><td>₹${(P+interest).toFixed(2)}</td></tr>`;
-    output.innerHTML = `<div class="result"><h3>कुल महीना: ${totalMonths.toFixed(1)}</h3><h3>कुल ब्याज: <span class="orange">₹${interest.toFixed(2)}</span></h3><h3>कुल रकम: <span class="green">₹${(P+interest).toFixed(2)}</span></h3></div>${table}</table>`;
-    return;
-  }
+  let remainingMonths = totalMonths;
+  let yearCount = 1;
 
-  // 2. 1 SAAL KE BAAD = CHAKRAVIRDHI
-  let yearCount = 2;
-  let tempP = currentP;
-
-  while(totalMonths > 0){
-    let monthsThisYear = totalMonths >= 12 ? 12 : totalMonths;
-    let currentSal = sSal.value + yearCount - 1;
+  // साल दर साल हिसाब
+  while(remainingMonths > 0){
+    let monthsThisYear = remainingMonths >= 12 ? 12 : remainingMonths;
+    let currentSal = parseInt(sSal.value) + yearCount - 1;
     
-    if(isAdhikVarsh(currentSal)) {
-      monthsThisYear = totalMonths >= 13 ? 13 : totalMonths;
-      if(monthsThisYear == 13) adhikCount++;
+    // अधिक साल है तो 13 महीने
+    if(isAdhikVarsh(currentSal) && remainingMonths >= 13) {
+      monthsThisYear = 13;
+      adhikCount++;
     }
     
-    let interest = tempP * (R/100) * (monthsThisYear/12);
-    tempP = tempP + interest;
+    let interest;
+    let type;
+    
+    if(yearCount === 1){
+      // पहला साल = साधारण
+      interest = currentP * (R/100) * (monthsThisYear/12);
+      type = `<span class="red">साधारण</span>`;
+    } else {
+      // दूसरा साल से = चक्रवृद्धि
+      interest = currentP * (R/100) * (monthsThisYear/12);
+      type = isAdhikVarsh(currentSal) ? `<span class="purple">चक्रवृद्धि+अधिक</span>` : `<span class="green">चक्रवृद्धि</span>`;
+    }
+    
+    currentP = currentP + interest;
     totalCI += interest;
     
-    let type = isAdhikVarsh(currentSal) ? `<span class="purple">चक्रवृद्धि+अधिक</span>` : `<span class="green">चक्रवृद्धि</span>`;
-    table += `<tr><td>${yearCount}</td><td>${type}</td><td>${monthsThisYear}</td><td>₹${(tempP-interest).toFixed(0)}</td><td>₹${interest.toFixed(2)}</td><td>₹${tempP.toFixed(2)}</td></tr>`;
+    table += `<tr><td>${yearCount}</td><td>${type}</td><td>${monthsThisYear}</td><td>₹${(currentP-interest).toFixed(0)}</td><td>₹${interest.toFixed(2)}</td><td>₹${currentP.toFixed(2)}</td></tr>`;
     
-    totalMonths -= monthsThisYear;
+    remainingMonths -= monthsThisYear;
     yearCount++;
   }
   table += `</table>`;
 
   output.innerHTML = `
     <div class="result">
-      <p><b>कुल महीना:</b> ${(endMonths - startMonths).toFixed(1)} महीने</p>
+      <p><b>कुल महीना:</b> ${totalMonths.toFixed(1)} महीने</p>
       <p><b>तारीख:</b> ${sDin.value} ${sPaksh.value=='sudi'?'सुदी':'बदी'} ${sMahina.value} ${sSal.value} से ${eDin.value} ${ePaksh.value=='sudi'?'सुदी':'बदी'} ${eMahina.value} ${eSal.value}</p>
       ${adhikCount > 0 ? `<p class="purple"><b>नोट:</b> इस बीच ${adhikCount} अधिक महीना आया</p>` : ''}
       <h3>कुल ब्याज: <span class="orange">₹${totalCI.toFixed(2)}</span></h3>
-      <h3>कुल रकम: <span class="green">₹${tempP.toFixed(2)}</span></h3>
+      <h3>कुल रकम: <span class="green">₹${currentP.toFixed(2)}</span></h3>
     </div>
     ${table}
   `;
