@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>अधिक महीना वाला ब्याज</title>
+<style>
+body { font-family: Arial; background: #f0f8ff; padding: 10px; }
+.box { background: #fff; padding: 15px; border-radius: 10px; max-width: 520px; margin: auto; }
+.header { background: linear-gradient(90deg, #FF9933, #fff, #138808); padding: 8px; text-align: center; border-radius: 8px; margin-bottom: 10px; }
+.header h1 { font-size: 16px; margin: 0; color: #000080; }
+.r2 { display:flex; gap:5px; }
+input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+.btn { width: 100%; padding: 12px; background: #004080; color: #fff; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; }
+.result { background: #e6ffe6; padding: 10px; border-radius: 5px; margin-top: 10px; border-left: 4px solid #28a745; }
+.green { color: #28a745; font-weight: bold; font-size: 18px; }
+.orange { color: #ff6600; font-weight: bold; }
+.red { color: #dc3545; font-weight: bold; }
+.purple { color: #800080; font-weight: bold; }
+table { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 12px; }
+th { background: #004080; color: #fff; padding: 5px; }
+td { padding: 5px; text-align: center; border: 1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="header">
+    <h1>🇮🇳 Vyapar Bandhu अधिक मास हिसाब 🇮🇳</h1>
+  </div>
+  <h2 style="text-align:center; color:#004080;">सुदी बदी + अधिक महीना + 1 साल बाद चक्रवृद्धि</h2>
+
+  <label>मूलधन ₹</label>
+  <input id="p" type="number" value="10000">
+
+  <label>ब्याज दर % सालाना</label>
+  <input id="r" type="number" step="0.1" value="12">
+
+  <label>शुरू की तारीख - हिंदी</label>
+  <div class="r2">
+    <input id="sDin" type="number" value="1" min="1" max="15">
+    <select id="sPaksh"><option value="sudi">सुदी</option><option value="badi">बदी</option></select>
+    <select id="sMahina">
+      <option>चैत्र</option><option>बैसाख</option><option>जेठ</option><option>आषाढ़</option>
+      <option selected>सावन</option><option>भादो</option><option>क्वार</option><option>कार्तिक</option>
+      <option>अगहन</option><option>पूस</option><option>माघ</option><option>फागुन</option>
+    </select>
+    <input id="sSal" type="number" value="2082">
+  </div>
+
+  <label>अंत की तारीख - हिंदी</label>
+  <div class="r2">
+    <input id="eDin" type="number" value="1" min="1" max="15">
+    <select id="ePaksh"><option value="sudi">सुदी</option><option selected value="badi">बदी</option></select>
+    <select id="eMahina">
+      <option>चैत्र</option><option>बैसाख</option><option>जेठ</option><option>आषाढ़</option>
+      <option>सावन</option><option>भादो</option><option>क्वार</option><option selected>कार्तिक</option>
+      <option>अगहन</option><option>पूस</option><option>माघ</option><option>फागुन</option>
+    </select>
+    <input id="eSal" type="number" value="2085">
+  </div>
+
+  <button class="btn" onclick="calc()">हिसाब लगाओ</button>
+
+  <div id="output"></div>
+</div>
+
+<script>
+const mahinaList = ["चैत्र","बैसाख","जेठ","आषाढ़","सावन","भादो","क्वार","कार्तिक","अगहन","पूस","माघ","फागुन"];
+
+// हर 3 साल में 1 अधिक महीना। 2082, 2085, 2088... में अधिक सावन माना
+function isAdhikVarsh(sal){
+  return (sal - 2082) % 3 === 0; 
+}
+
+function hindiDateToDays(din, paksh, mahina, sal){
+  let totalDays = 0;
+  // 2082 से शुरू के साल तक के दिन जोड़ो
+  for(let y = 2082; y < sal; y++){
+    totalDays += 360; // 12 mahina
+    if(isAdhikVarsh(y)) totalDays += 30; // अधिक महीना
+  }
+  
+  // इस साल के महीने जोड़ो
+  let mahinaIndex = mahinaList.indexOf(mahina);
+  totalDays += mahinaIndex * 30;
+  
+  // अधिक महीना है तो 30 दिन और जोड़ो
+  if(isAdhikVarsh(sal) && mahinaIndex >= mahinaList.indexOf("सावन")) {
+    totalDays += 30; // अधिक सावन
+  }
+  
+  // दिन जोड़ो
+  let dinInMahina = (paksh === 'sudi') ? parseInt(din) : 15 + parseInt(din);
+  totalDays += dinInMahina;
+  
+  return totalDays;
+}
+
+function calc(){
+  let P = parseFloat(p.value);
+  let R = parseFloat(r.value);
+  
+  let startDays = hindiDateToDays(sDin.value, sPaksh.value, sMahina.value, sSal.value);
+  let endDays = hindiDateToDays(eDin.value, ePaksh.value, eMahina.value, eSal.value);
+  let totalDays = endDays - startDays;
+
+  if(totalDays < 0){ alert("अंत की तारीख गलत है"); return; }
+
+  let currentP = P;
+  let totalCI = 0;
+  let adhikCount = 0;
+  let table = `<table><tr><th>साल</th><th>प्रकार</th><th>दिन</th><th>शुरू रकम</th><th>ब्याज</th><th>कुल रकम</th></tr>`;
+
+  // 1. PEHLA SAAL = SADHARAN BYAJ
+  if(totalDays >= 360){
+    let interest1 = P * (R/100) * 1;
+    let after1Year = P + interest1;
+    table += `<tr><td>1</td><td class="red">साधारण</td><td>360</td><td>₹${P.toFixed(0)}</td><td>₹${interest1.toFixed(2)}</td><td>₹${after1Year.toFixed(2)}</td></tr>`;
+    currentP = after1Year;
+    totalCI += interest1;
+    totalDays -= 360;
+  } else {
+    let interest = P * (R/100) * (totalDays/360);
+    table += `<tr><td>1</td><td class="red">साधारण</td><td>${totalDays}</td><td>₹${P.toFixed(0)}</td><td>₹${interest.toFixed(2)}</td><td>₹${(P+interest).toFixed(2)}</td></tr>`;
+    output.innerHTML = `<div class="result"><h3>कुल ब्याज: <span class="orange">₹${interest.toFixed(2)}</span></h3><h3>कुल रकम: <span class="green">₹${(P+interest).toFixed(2)}</span></h3></div>${table}</table>`;
+    return;
+  }
+
+  // 2. 1 SAAL KE BAAD = CHAKRAVIRDHI
+  let yearCount = 2;
+  let tempP = currentP;
+
+  while(totalDays > 0){
+    let daysThisYear = totalDays >= 360 ? 360 : totalDays;
+    
+    // अगर इस पीरियड में अधिक महीना आया तो दिन 390 हो जाएंगे
+    let currentSal = sSal.value + yearCount - 1;
+    if(isAdhikVarsh(currentSal)) {
+      daysThisYear = totalDays >= 390 ? 390 : totalDays;
+      if(daysThisYear == 390) adhikCount++;
+    }
+    
+    let interest = tempP * (R/100) * (daysThisYear/360);
+    tempP = tempP + interest;
+    totalCI += interest;
+    
+    let type = isAdhikVarsh(currentSal) ? `<span class="purple">चक्रवृद्धि+अधिक</span>` : `<span class="green">चक्रवृद्धि</span>`;
+    table += `<tr><td>${yearCount}</td><td>${type}</td><td>${daysThisYear}</td><td>₹${(tempP-interest).toFixed(0)}</td><td>₹${interest.toFixed(2)}</td><td>₹${tempP.toFixed(2)}</td></tr>`;
+    
+    totalDays -= daysThisYear;
+    yearCount++;
+  }
+  table += `</table>`;
+
+  let totalDaysOriginal = endDays - startDays;
+
+  output.innerHTML = `
+    <div class="result">
+      <p><b>कुल दिन:</b> ${totalDaysOriginal} दिन</p>
+      <p><b>तारीख:</b> ${sDin.value} ${sPaksh.value=='sudi'?'सुदी':'बदी'} ${sMahina.value} ${sSal.value} से ${eDin.value} ${ePaksh.value=='sudi'?'सुदी':'बदी'} ${eMahina.value} ${eSal.value}</p>
+      ${adhikCount > 0 ? `<p class="purple"><b>नोट:</b> इस बीच ${adhikCount} अधिक महीना आया</p>` : ''}
+      <h3>कुल ब्याज: <span class="orange">₹${totalCI.toFixed(2)}</span></h3>
+      <h3>कुल रकम: <span class="green">₹${tempP.toFixed(2)}</span></h3>
+    </div>
+    ${table}
+  `;
+}
+calc();
+</script>
+</body>
+</html>
