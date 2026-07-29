@@ -1,16 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vyapar Bandhu - Bandhak Kalkuletar</title>
+<title>Vyapar Bandhu - राख्ती चुर्ती हिसाब</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7283668314058198" crossorigin="anonymous"></script>
 <style>
 body { font-family: 'Mangal', Arial; background: #f5f5f5; margin: 0; padding: 0; font-size: 14px; }
 .gov-board { background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808); padding: 10px; text-align: center; border-bottom: 4px solid #000080; }
 .gov-board h1 { margin: 0; font-size: 17px; color: #000080; font-weight: bold; }
 .gov-board p { margin: 3px 0 0 0; font-size: 12px; color: #000; font-weight: bold; }
+
 .calc-box { background: #fff; padding: 15px; margin: 10px; border-radius: 10px; border: 2px solid #ff9800; }
 .calc-box h2 { text-align: center; color: #d32f2f; margin: 5px 0 15px 0; font-size: 16px; }
 label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; }
@@ -19,46 +19,49 @@ input, select { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid #
 .btn-row { display: flex; gap: 8px; margin-top: 10px; }
 .btn-speak { flex: 1; background: #ff6600; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold; }
 .btn-print { flex: 1; background: #000080; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold; }
+
 .result-box { background: #e8f5e9; padding: 15px; margin-top: 15px; border-radius: 8px; border: 2px dashed #2e7d32; display: none; }
+.result-box h3 { margin: 0 0 10px 0; color: #1b5e20; text-align: center; }
 .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #ccc; }
 .total { font-size: 18px; font-weight: bold; color: #d32f2f; }
 .note { font-size: 11px; color: #555; margin-top: 8px; }
+.ad-box { margin: 15px 0; text-align: center; }
+
+/* Print ke liye */
 @media print {
   body * { visibility: hidden; }
   #printArea, #printArea * { visibility: visible; }
   #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+  .gov-board { border: 2px solid #000; }
 }
 </style>
 </head>
 <body>
 
 <div class="gov-board">
-  <h1>Vyapar Bandhu Bandhak Kalkuletar</h1>
-  <p>Made in Bihar | अधिक महीना + चक्रवृद्धि | Indian 🇮🇳</p>
+  <h1>Vyapar Bandhu राख्ती चुर्ती हिसाब कैलकुलेटर</h1>
+  <p>Made in Bihar | देसी कैलेंडर | Indian 🇮🇳</p>
 </div>
 
 <div class="calc-box">
-  <h2>💰 अधिक महीना वाला ब्याज हिसाब</h2>
+  <h2>💰 देसी ब्याज हिसाब लगाएं</h2>
   
-  <label>मूलधन ₹</label>
-  <input type="number" id="mulDhan" placeholder="10000" value="10000">
+  <label>मूल राशि ₹</label>
+  <input type="number" id="mulDhan" placeholder="जैसे 1000" value="1000">
 
-  <label>ब्याज दर % सालाना</label>
-  <input type="number" id="byajRate" placeholder="36" value="36">
-
-  <label>शुरू की तारीख - हिंदी महीना</label>
-  <input type="text" id="startDate" placeholder="जैसे श्रावण सुदी 1, 2026" value="">
+  <label>महीना का ब्याज %</label>
+  <input type="number" id="byajRate" placeholder="जैसे 2.5" step="0.1" value="2.5">
 
   <label>कुल साल</label>
-  <input type="number" id="kulSal" placeholder="1" value="1">
+  <input type="number" id="kulSal" placeholder="जैसे 2" value="2">
 
   <label>कुल महीना</label>
-  <input type="number" id="kulMahina" placeholder="1" value="1">
+  <input type="number" id="kulMahina" placeholder="जैसे 0" value="0">
 
   <label>ब्याज का प्रकार</label>
   <select id="byajType">
     <option value="sadaran">साधारण ब्याज</option>
-    <option value="chakravridhi">चक्रवृद्धि - 1 साल बाद से</option>
+    <option value="chakravridhi">चक्रवृद्धि ब्याज - 1 साल बाद से</option>
   </select>
 
   <button class="btn-main" onclick="hisabLagao()">हिसाब जोड़ें</button>
@@ -72,8 +75,8 @@ input, select { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid #
       <div class="result-row"><span>कुल महीना:</span><span id="resKulMahina">0</span></div>
       <div class="result-row"><span>कुल ब्याज:</span><span id="resByaj">₹0</span></div>
       <div class="result-row total"><span>कुल देना होगा:</span><span id="resTotal">₹0</span></div>
-      <p class="note">नोट: हर 3 साल पर 1 अधिक महीना अपने आप जुड़ गया है। सुदी-बदी + हिंदी महीना सिस्टम</p>
-      <p class="note" style="text-align:center;">Vyapar Bandhu | Made in Bihar 🇮🇳</p>
+      <p class="note">नोट: हर 3 साल पर 1 अधिक महीना अपने आप जुड़ गया है।</p>
+      <p class="note" style="text-align:center; margin-top:10px;">Vyapar Bandhu | Made in Bihar 🇮🇳</p>
     </div>
     
     <div class="btn-row">
@@ -83,13 +86,18 @@ input, select { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid #
   </div>
 </div>
 
+<div class="ad-box">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7283668314058198" data-ad-slot="2128848157"></ins>
+</div>
+
 <script>
+window.onload = function() { (adsbygoogle = window.adsbygoogle || []).push({}); }
+
 let lastResultText = "";
 
 function hisabLagao(){
   let mul = parseFloat(document.getElementById('mulDhan').value) || 0;
-  let rateSalana = parseFloat(document.getElementById('byajRate').value) || 0;
-  let rate = rateSalana / 12; // महीना का %
+  let rate = parseFloat(document.getElementById('byajRate').value) || 0;
   let sal = parseInt(document.getElementById('kulSal').value) || 0;
   let mahina = parseInt(document.getElementById('kulMahina').value) || 0;
   let type = document.getElementById('byajType').value;
@@ -112,7 +120,7 @@ function hisabLagao(){
     let bacheMahina = kulMahina % 12;
     
     for(let i=1; i<=pureSal; i++){
-      let salKaByaj = (currentMul * rateSalana) / 100;
+      let salKaByaj = (currentMul * rate * 12) / 100;
       currentMul = currentMul + salKaByaj;
     }
     if(bacheMahina > 0){
@@ -131,17 +139,23 @@ function hisabLagao(){
   document.getElementById('resTotal').innerText = "₹" + total.toFixed(2);
   document.getElementById('resultBox').style.display = "block";
 
-  lastResultText = `Vyapar Bandhu हिसाब. मूलधन ${mul} रुपया. ब्याज दर ${rateSalana} प्रतिशत सालाना. कुल समय ${sal} साल ${mahina} महीना. ${byajTypeName}. अधिक महीना ${adhikMahina} जुड़ा. कुल महीना ${kulMahina}. कुल ब्याज ${kulByaj.toFixed(0)} रुपया. कुल देना होगा ${total.toFixed(0)} रुपया.`;
+  lastResultText = `Vyapar Bandhu हिसाब. मूलधन ${mul} रुपया. ब्याज दर ${rate} प्रतिशत महीना. कुल समय ${sal} साल ${mahina} महीना. ${byajTypeName}. अधिक महीना ${adhikMahina} जुड़ा. कुल महीना ${kulMahina}. कुल ब्याज ${kulByaj.toFixed(0)} रुपया. कुल देना होगा ${total.toFixed(0)} रुपया.`;
 }
 
 function speakResult(){
-  if(lastResultText === ""){ alert("पहले हिसाब जोड़ें"); return; }
+  if(lastResultText === ""){
+    alert("पहले हिसाब जोड़ें");
+    return;
+  }
   let utterance = new SpeechSynthesisUtterance(lastResultText);
-  utterance.lang = 'hi-IN'; utterance.rate = 0.9;
+  utterance.lang = 'hi-IN';
+  utterance.rate = 0.9;
   window.speechSynthesis.speak(utterance);
 }
 
-function printResult(){ window.print(); }
+function printResult(){
+  window.print();
+}
 </script>
 </body>
 </html>
